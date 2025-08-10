@@ -1,0 +1,12 @@
+# Files used for testing features before implementation.
+test.html
+test.mp4
+test.webm
+
+### VS Code
+.vscode/*
+.github/
+
+# Local history which shouldn't be shared.
+.history
+.ionide
