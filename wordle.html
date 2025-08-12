@@ -109,7 +109,7 @@
 
       .wordle
       {
-        width: 450px;
+        max-width: 450px;
         margin: 30px 0px;
         background: #95acec;
         padding: 30px;
@@ -117,7 +117,22 @@
         border: 3px solid #beccf5;
         flex: 1;
         text-align: center;
+        margin-top: -537px;
       }
+
+      .description
+      {
+        max-width: 500px;
+        margin: 30px 0px;
+        background: #95acec;
+        padding: 30px;
+        border-radius: 16px;
+        border: 3px solid #beccf5;
+        flex: 1;
+        text-align: center;
+        margin-left: 60%;
+      }
+
     </style>
   </head>
 
@@ -125,21 +140,38 @@
     <headerr></headerr>
     <script class="headerr" src="./scripts/header.js"></script>
 
+    <center>
+      </section>
+        <section class="description">
+          <p>
+            Added Worldle because I think it's a cool game and I wanted to make my own version for the site, seem's like a fun thing to do or come back to one and awhile.<br><br>
+            People might not y'know, use this at all but It was fun to make and that's all I really care about.<br><br>
+
+            I might update this in the future to probably add like modes or something like that, mainly to add more gameplay rather than just "guess a 5 letter word chosen from a list and also you only get 6 tries and if you dont get it right then too bad wait till tommorow!!"
+            <br><br>
+            Adding like a word change button or a endless mode where it just removes your progress after beating or losing to a word and adding a score counter might make this more fun.
+            <br>
+            But yeah, that all could be cool, thank you for reading this.
+          </p>
+        </section>
+      </section>
+      
     <section class="content-wrapper">
       <section class="wordle">
       
-      <h1>Wordle</h1>
-      <h3>Guess today's 5-letter word</h3>
+        <h1>Wordle</h1>
+        <h3>Guess today's 5-letter word</h3>
 
-      <div id="game">
-      </div>
+        <div id="game">
+        </div>
 
-      <br>
+        <br>
 
-      <button id="submitBtn">Submit</button>
-      <div id="result"></div>
+        <button id="submitBtn">Submit</button>
+        <div id="result"></div>
       </section>
     </section>
+    </center>
 
     <footerr></footerr>
     <script src="./scripts/footer.js"></script>
