@@ -1,3 +1,21 @@
+window.addEventListener('DOMContentLoaded', () => {
+    const blogContent = document.querySelector('.blog-post');
+    if (!blogContent) return;
+
+    const text = blogContent.innerText || blogContent.textContent;
+    const wordCount = text.trim().split(/\s+/).length;
+
+    const readTimeEl = document.createElement('p');
+    readTimeEl.innerHTML = `<strong>Read Time:</strong> ${Math.ceil(wordCount / 200)} min read`;
+
+    const dateParagraph = blogContent.querySelector('p');
+    
+    if (dateParagraph)
+        dateParagraph.insertAdjacentElement('afterend', readTimeEl);
+    else
+        blogContent.prepend(readTimeEl);
+});
+
 document.querySelectorAll("evideo").forEach(header => {
     if (!header.id) return;
 

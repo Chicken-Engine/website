@@ -7,7 +7,7 @@
 
   let root = scriptDir.replace(/scripts\/$/, "");
 
-  link.rel = `stylesheet`;
+  link.rel = "stylesheet";
   link.href = `${root}scripts/mediaplayer.css`;
   document.head.appendChild(link);
 })();

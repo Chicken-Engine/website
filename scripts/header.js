@@ -14,6 +14,7 @@ document.querySelectorAll("headerr").forEach(qer => {
     <div class="nav-buttons">
       <a href="${root}index.html">Home</a>
       <a href="${root}blogs.html">Blogs</a>
+      <a href="${root}wordle.html">Wordle</a>
     </div>
   </header>
 `;
