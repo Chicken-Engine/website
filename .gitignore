@@ -2,8 +2,9 @@
 test.html
 test.mp4
 test.webm
-.dist
+
 runSite.bat
+.dist
 
 ### VS Code
 .vscode/*
