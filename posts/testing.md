@@ -1,7 +1,7 @@
 ---
 title: Testing
 date: 2025-08-15
-slug: test
+slug: testing
 writer: Sofy
 ---
 
