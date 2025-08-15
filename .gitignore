@@ -8,7 +8,6 @@ runSite.bat
 
 ### VS Code
 .vscode/*
-.github/
 
 # Local history which shouldn't be shared.
 .history

@@ -1,0 +1,17 @@
+name: Notify Discord Webhook when new gh-pages Push
+
+on:
+  push:
+    branches:
+      - gh-pages
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Message Request to Discord
+        run: |
+          curl -H "Content-type: application/json" \
+              -X POST \
+              -d '{"content": "The branch `gh-pages` just updated!"}' \
+              ${{secrets.DISCORD_WEBHOOK_URL}}
