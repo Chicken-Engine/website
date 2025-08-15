@@ -19,14 +19,14 @@ My plan for this website is to hopefully share more information on what's going 
 The progress of the engine is going smoothly, everything is going as It's mainly supposed to aside from the few changes that need to or could be changed. I currently have 3 people working on this engine at the moment of writing this blog those people are
 
 <center>
-<img src="https://chicken-engine.github.io/website/blogs/blog2/images/devs.png">
+<img src="https://chicken-engine.github.io/website/images/devs.png">
 </center>
 
 This is the best team I've ever had, It does take time to build a team but I think at the moment 4 team members are enough for us at the moment.
 I can probably show off a small teaser of something we've been planning.
 
 <center>
-<img src="https://chicken-engine.github.io/website/blogs/blog2/images/teaser.png">
+<img src="https://chicken-engine.github.io/website/images/teaser.png">
 </center>
 
 That's right, we are making a launcher for the engine! The launcher will contain a few features to either make stuff quicker so you dont have to open the engine to do it or just having to update the engine in general!
