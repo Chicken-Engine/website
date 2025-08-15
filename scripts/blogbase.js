@@ -23,7 +23,7 @@ document.querySelectorAll("evideo").forEach(header => {
 
     header.outerHTML = `
     <div class="video-container">
-    <video id="myVideo" preload="metadata" src="${header.id}">
+    <video id="myVideo" type="video/mp4" src="${header.id}">
         Your browser does not support the video tag.
     </video>
     <!-- <video id="myVideo" src="${header.id}" preload="metadata"></video> -->
