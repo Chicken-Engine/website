@@ -14,4 +14,4 @@ jobs:
         with:
           webhook_id: ${{ secrets.WEBHOOK_ID }}
           webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-          message: \* Erererer, we updated the website, you should check it out
+          message: \* Erererer, we updated the website, you should maybe check it out. I am Sans Undertale.
