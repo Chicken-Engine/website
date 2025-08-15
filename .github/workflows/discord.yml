@@ -1,5 +1,4 @@
 name: Discord Webhook Send Message
-uses: aar0nsky/discord-webhook-github-action@1.0.0
 
 on:
   push:
