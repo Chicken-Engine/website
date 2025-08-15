@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send message to discord channel
-        uses: aar0nsky/discord-webhook-github-action@main
+        uses: Chicken-Engine/discord-webhook-github-action@main
         with:
           webhook_id: ${{ secrets.WEBHOOK_ID }}
           webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
