@@ -5,13 +5,22 @@ window.addEventListener('DOMContentLoaded', () => {
     const text = blogContent.innerText || blogContent.textContent;
     const wordCount = text.trim().split(/\s+/).length;
 
+    let readTimeText = '';
+    if (wordCount < 5) return;
+    else if (wordCount < 30)
+        readTimeText = '<strong>Read Time:</strong> &lt;1 min read';
+    else
+    {
+        const minutes = Math.ceil(wordCount / 200);
+        readTimeText = `<strong>Read Time:</strong> ${minutes} min read`;
+    }
+
     const readTimeEl = document.createElement('p');
-    readTimeEl.innerHTML = `<strong>Read Time:</strong> ${Math.ceil(wordCount / 200)} min read`;
+    readTimeEl.innerHTML = readTimeText;
 
     const dateParagraph = blogContent.querySelector('p');
-    
     if (dateParagraph)
-        dateParagraph.insertAdjacentElement('afterend', readTimeEl);
+        dateParagraph.insertAdjacentElement('beforebegin', readTimeEl);
     else
         blogContent.prepend(readTimeEl);
 });
