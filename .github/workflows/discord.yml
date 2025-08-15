@@ -1,13 +1,18 @@
-- name: Discord Webhook Send Message
-  uses: aar0nsky/discord-webhook-github-action@1.0.0
+name: Discord Webhook Send Message
+uses: aar0nsky/discord-webhook-github-action@1.0.0
 
-  jobs:
-    discord:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Send message to discord channel
-          uses: aar0nsky/discord-webhook-github-action@main
-          with:
-            webhook_id: ${{ secrets.WEBHOOK_ID }}
-            webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-            message: Updated Website
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send message to discord channel
+        uses: aar0nsky/discord-webhook-github-action@main
+        with:
+          webhook_id: ${{ secrets.WEBHOOK_ID }}
+          webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+          message: Updated Website
