@@ -110,19 +110,6 @@
 
       .wordle
       {
-        max-width: 450px;
-        margin: 30px 0px;
-        background: #95acec;
-        padding: 30px;
-        border-radius: 16px;
-        border: 3px solid #beccf5;
-        flex: 1;
-        text-align: center;
-        margin-top: -537px;
-      }
-
-      .description
-      {
         max-width: 500px;
         margin: 30px 0px;
         background: #95acec;
@@ -131,7 +118,18 @@
         border: 3px solid #beccf5;
         flex: 1;
         text-align: center;
-        margin-left: 60%;
+      }
+
+      .description
+      {
+        background: #95acec;
+        border: 3px solid #AEC1F6;
+        margin: 30px auto;
+        padding: 30px 20px;
+        border-radius: 20px;
+        max-width: 850px;
+        color: white;
+        text-align: center;
       }
 
     </style>
@@ -141,7 +139,22 @@
     <headerr></headerr>
     <script class="headerr" src="./scripts/header.js"></script>
 
-    <center>
+    <section class="content-wrapper">
+
+        
+      <section class="wordle">
+        <h1>Wordle</h1>
+        <h3>Guess today's 5-letter word</h3>
+
+        <div id="game">
+        </div>
+
+        <br>
+
+        <button id="submitBtn">Submit</button>
+        <div id="result"></div>
+      </section>
+
       </section>
         <section class="description">
           <p>
@@ -156,277 +169,13 @@
           </p>
         </section>
       </section>
-      
-    <section class="content-wrapper">
-      <section class="wordle">
-      
-        <h1>Wordle</h1>
-        <h3>Guess today's 5-letter word</h3>
-
-        <div id="game">
-        </div>
-
-        <br>
-
-        <button id="submitBtn">Submit</button>
-        <div id="result"></div>
-      </section>
     </section>
-    </center>
 
     <footerr></footerr>
     <script src="./scripts/footer.js"></script>
 
-    <!-- ALWAYS OBFUSCATE THIS CODEEE -->
-    <!-- use https://obfuscator.io/ -->
-    <!-- also remove these comments lmao -->
-
     <script>
-      const WORD_LIST_URL = "./wordlist.txt";
-      let wordoftheentiretotallyoriginaldaynessly = "";
-      let currentTry = 1;
-      const maxTries = 6;
-      const wordLength = 5;
-
-      const STORAGE_KEY = "wordle-progress";
-
-      const wordstuff = ["You've already attempted today's word!", "You've already solved today's word!"];
-
-      fetch(WORD_LIST_URL)
-      .then(res => res.text())
-      .then(text => {
-        const words = text.trim().split('\n').map(w => w.trim().toLowerCase());
-        const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % words.length;
-        wordoftheentiretotallyoriginaldaynessly = words[dayIndex];
-
-        const savedProgress = JSON.parse(localStorage.getItem(STORAGE_KEY));
-
-        if (savedProgress)
-        {
-          if (savedProgress.word === wordoftheentiretotallyoriginaldaynessly)
-          {
-            restoreProgress(savedProgress);
-
-            if (savedProgress.completed)
-            {
-              disableAll();
-              const message = savedProgress.guesses.length >= maxTries &&
-                              savedProgress.currentTry > maxTries &&
-                              !savedProgress.guesses.some(row => row.every(cell => cell.className === "correct"))
-                ? wordstuff[0]
-                : wordstuff[1];
-
-              document.getElementById("result").textContent = message;
-            }
-            else
-              localStorage.removeItem(STORAGE_KEY);
-          }
-        }
-
-        if (!savedProgress || savedProgress.word !== wordoftheentiretotallyoriginaldaynessly)
-        {
-          const firstRow = gameDiv.children[0];
-          firstRow.querySelectorAll("input").forEach(inp => inp.disabled = false);
-        }
-      })
-      .catch(err => {
-        const savedProgress = JSON.parse(localStorage.getItem(STORAGE_KEY));
-
-        if (!savedProgress)
-        {
-          document.getElementById("result").textContent = "Error loading word list.";
-          console.error(err);
-        }
-        else
-        {
-          const message = savedProgress.guesses.length >= maxTries &&
-                          savedProgress.currentTry > maxTries &&
-                          !savedProgress.guesses.some(row => row.every(cell => cell.className === "correct"))
-            ? wordstuff[0]
-            : wordstuff[1];
-
-          document.getElementById("result").textContent = message;
-        }
-      });
-
-      const gameDiv = document.getElementById("game");
-      for (let t = 0; t < maxTries; t++)
-      {
-        const row = document.createElement("div");
-        row.classList.add("row");
-
-        for (let i = 0; i < wordLength; i++)
-        {
-          const input = document.createElement("input");
-          input.type = "text";
-          input.maxLength = 1;
-          input.disabled = t !== 0;
-          input.oninput = e => moveFocus(e, row);
-          input.onkeydown = e => handleKeys(e);
-          row.appendChild(input);
-        }
-
-        gameDiv.appendChild(row);
-      }
-
-      function moveFocus(event, row)
-      {
-        const inputs = row.querySelectorAll("input");
-        const idx = Array.from(inputs).indexOf(event.target);
-
-        if (event.target.value && idx < wordLength - 1)
-          inputs[idx + 1].focus();
-      }
-
-      function handleKeys(event)
-      {
-        const activeRow = gameDiv.children[currentTry - 1];
-        const inputs = activeRow.querySelectorAll("input");
-        const idx = Array.from(inputs).indexOf(event.target);
-
-        if (event.key === "Backspace" && !event.target.value && idx > 0)
-          inputs[idx - 1].focus();
-        
-        if (event.key === "Enter")
-          checkGuess();
-      }
-
-      function checkGuess()
-      {
-        const row = gameDiv.children[currentTry - 1];
-        const inputs = Array.from(row.querySelectorAll("input"));
-
-        const guess = inputs.map(i => i.value.toLowerCase()).join("");
-
-        if (inputs.some(i => i.value === ""))
-        {
-          document.getElementById("result").textContent = "Please enter all letters.";
-          return;
-        }
-
-        let correctGuess = true;
-        for (let i = 0; i < wordLength; i++)
-        {
-          inputs[i].className = "";
-          if (guess[i] === wordoftheentiretotallyoriginaldaynessly[i])
-            inputs[i].classList.add("correct");
-          else if (wordoftheentiretotallyoriginaldaynessly.includes(guess[i]))
-          {
-            inputs[i].classList.add("present");
-            correctGuess = false;
-          }
-          else
-          {
-            inputs[i].classList.add("absent");
-            correctGuess = false;
-          }
-
-          inputs[i].disabled = true;
-        }
-
-        if (correctGuess)
-        {
-          document.getElementById("result").textContent = "Correct!";
-          saveProgress(currentTry, true);
-          disableAll();
-
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          document.cookie = `word=${wordoftheentiretotallyoriginaldaynessly}; expires=${tomorrow.toUTCString()}; path=/`;
-          return;
-        }
-
-        currentTry++;
-
-        if (currentTry - 1 >= maxTries)
-        {
-          document.getElementById("result").textContent = "Try Again";
-          saveProgress(currentTry, false);
-          disableAll();
-          return;
-        }
-
-        saveProgress(currentTry, false);
-
-        const nextRow = gameDiv.children[currentTry - 1];
-        nextRow.querySelectorAll("input").forEach(inp => inp.disabled = false);
-        nextRow.querySelector("input").focus();
-      }
-
-      function saveProgress(tryNumber, completed)
-      {
-        const progress = {
-          word: wordoftheentiretotallyoriginaldaynessly,
-          currentTry: tryNumber,
-          completed: completed,
-          guesses: []
-        };
-
-        for (let t = 0; t < maxTries; t++)
-        {
-          const row = gameDiv.children[t];
-          const inputs = row.querySelectorAll("input");
-          const guessRow = [];
-
-          for (const input of inputs)
-          {
-            guessRow.push({
-              letter: input.value,
-              className: input.className,
-              disabled: input.disabled
-            });
-          }
-          progress.guesses.push(guessRow);
-        }
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-      }
-
-      function restoreProgress(progress)
-      {
-        currentTry = progress.currentTry;
-
-        for (let t = 0; t < maxTries; t++)
-        {
-          const row = gameDiv.children[t];
-          const inputs = row.querySelectorAll("input");
-          const guessRow = progress.guesses[t];
-
-          for (let i = 0; i < wordLength; i++)
-          {
-            inputs[i].value = guessRow[i].letter;
-            inputs[i].className = guessRow[i].className;
-            inputs[i].disabled = guessRow[i].disabled;
-          }
-        }
-
-        if (!progress.completed)
-        {
-          const currentRow = gameDiv.children[currentTry - 1];
-
-          currentRow.querySelectorAll("input").forEach(inp => {
-            if (!inp.value) inp.disabled = false;
-          });
-
-          const firstEmpty = Array.from(currentRow.querySelectorAll("input")).find(i => !i.value);
-          if (firstEmpty) firstEmpty.focus();
-        }
-      }
-
-      function getCookieValue(name)
-      {
-        const cookie = document.cookie
-          .split("; ")
-          .find(cookie => cookie.startsWith(name + "="));
-        return cookie ? cookie.split("=")[1] : null;
-      }
-
-      function disableAll()
-      {
-        document.querySelectorAll("#game input, #submitBtn").forEach(el => el.disabled = true);
-      }
-
-      document.getElementById("submitBtn").addEventListener("click", checkGuess);
+      const pA=v;(function(p,d){const pV={p:0x155,d:0xfd,C:0x120},pa=v,C=p();while(!![]){try{const D=-parseInt(pa(pV.p))/(0xc45*-0x1+-0x1*-0x24fa+-0x11*0x174)+-parseInt(pa(0x11c))/(0x17e6+-0x12be+-0x526)+-parseInt(pa(0x12c))/(-0x744+-0x7*-0x53+-0x1*-0x502)+parseInt(pa(pV.d))/(0x8*0x205+0x1759+-0xb*0x397)+parseInt(pa(pV.C))/(-0xac8+-0x4c6+0x531*0x3)+parseInt(pa(0xf0))/(0x15b1*-0x1+0x3b*-0x75+0x5d*0x86)*(parseInt(pa(0x13e))/(0x14db*-0x1+-0x5*-0x583+0x1*-0x6ad))+-parseInt(pa(0x144))/(-0x1*-0x773+-0x7f*0x3b+-0xaed*-0x2)*(-parseInt(pa(0x114))/(0xe49+0x14a4+0x16*-0x196));if(D===d)break;else C['push'](C['shift']());}catch(M){C['push'](C['shift']());}}}(k,-0x39981*0x1+-0x248e1*0x1+0x9*0xf16f));const pD='./wordlist'+pA(0x159);let pM='',pw=-0xd*0xd1+-0x1cef+0x278d;function v(p,d){const C=k();return v=function(D,M){D=D-(-0x1f33+0xbd8+0x144a);let w=C[D];return w;},v(p,d);}const pH=-0x715+-0x1*0x224d+-0x64*-0x6a,py=0x1*0x9db+-0x136f+0x5b*0x1b,pi=pA(0xf4)+pA(0x15a),pz=[pA(0x143)+'eady\x20attem'+pA(0xf1)+pA(0x121),pA(0x143)+pA(0xfa)+'d\x20today\x27s\x20'+pA(0x115)];fetch(pD)[pA(0x14e)](p=>p[pA(0x112)]())[pA(0x14e)](p=>{const pe={p:0x100,d:0x10b,C:0x152,D:0x102,M:0x123,w:0x13a,H:0xf2,y:0x160,z:0x154,B:0x15d,O:0x147,G:0x158},pf=pA,d=p[pf(0xf7)]()[pf(pe.p)]('\x0a')[pf(0xfc)](M=>M['trim']()[pf(0x14d)+'e']()),C=Math[pf(pe.d)](Date[pf(pe.C)]()/((-0x5bf*-0x5+0x1068+-0x293b)*(-0x17af+0x1672+-0xd*-0x1d)*(0x55d*0x7+-0x53b*-0x5+-0x3f76)*(-0x1006+-0x2*0x2ad+0x1578*0x1)))%d['length'];pM=d[C];const D=JSON[pf(pe.D)](localStorage[pf(pe.M)](pi));if(D){if(D['pp']===pM){pt(D);if(D['pd']){if(pf(0x13a)!==pf(pe.w))D[M][pf(0x153)][pf(pe.H)](pf(pe.y)),w=![];else{pU();const w=D['pk'][pf(0x129)]>=pH&&D['pv']>pH&&!D['pk'][pf(0x108)](H=>H[pf(0x11b)](y=>y[pf(0xf8)]==='correct'))?pz[-0xbf7*-0x1+0x36*0x83+-0x2799]:pz[0x6*0x2bd+-0x637*0x2+-0x3ff*0x1];document[pf(pe.z)+pf(pe.B)](pf(0x135))[pf(pe.O)+'t']=w;}}else localStorage[pf(0x10f)](pi);}}if(!D||D['pp']!==pM){const H=pB[pf(0x132)][-0x99*0x1b+-0xf52+0x1f75*0x1];H[pf(0x13b)+pf(pe.G)](pf(0x116))['forEach'](y=>y[pf(0x10c)]=![]);}})[pA(0x107)](p=>{const pQ={p:0x123,d:0x12a,C:0x108,D:0x154,M:0x15d,w:0x147,H:0x135,y:0x15d,z:0x135,B:0x129,O:0x154,G:0x147,I:0x10f},px=pA,d=JSON['parse'](localStorage[px(pQ.p)](pi));if(!d){if(px(0x12a)!==px(pQ.d)){const D=z['pk'][px(0x129)]>=B&&O['pv']>G&&!I['pk'][px(pQ.C)](L=>L[px(0x11b)](b=>b[px(0xf8)]==='correct'))?r[0x4*0x426+-0x3*0x44f+-0x3ab*0x1]:J[0x1e9*-0xd+0xf5d+0x979];U[px(pQ.D)+px(pQ.M)](px(0x135))[px(pQ.w)+'t']=D;}else document['getElement'+'ById'](px(pQ.H))[px(0x147)+'t']=px(0x125)+'ing\x20word\x20l'+px(0x105),console[px(0x161)](p);}else{if('bToUM'!=='gniTD'){const D=d['pk'][px(0x129)]>=pH&&d['pv']>pH&&!d['pk'][px(pQ.C)](M=>M[px(0x11b)](w=>w['className']===px(0x13c)))?pz[-0x11af+-0x9*0x10d+0x6c9*0x4]:pz[-0xb86+-0x72e+0x12b5];document['getElement'+px(pQ.y)](px(pQ.z))[px(pQ.w)+'t']=D;}else{J(U);if(s['pd']){n();const w=c['pk'][px(pQ.B)]>=T&&l['pv']>N&&!W['pk'][px(0x108)](X=>X['every'](q=>q[px(0xf8)]==='correct'))?V[0x56*0x47+0x487*-0x3+-0xa45]:e[-0xf8f+0x5fb*-0x5+0x2d77];Q[px(pQ.O)+'ById']('result')[px(pQ.G)+'t']=w;}else g[px(pQ.I)](h);}}});function k(){const d2=['tor','You\x27ve\x20alr','4616qFSWZO','apply','rn\x20this\x22)(','textConten','info','Enter','eeXJu','BlqNp','cookie','toLowerCas','then','__proto__','bind','forEach','now','classList','getElement','125289Bezeje','stener','focus','torAll','.txt','gress','createElem','prototype','ById',';\x20path=/','push','present','error','constructo','240djUOSI','pted\x20today','add','warn','wordle-pro','value','absent','trim','className','trace','eady\x20solve','exception','map','1326240JAvHVT','find','nction()\x20','split','er\x20all\x20let','parse','game','return\x20(fu','ist.','click','catch','some','lTwXs','getDate','floor','disabled','GKWLg','from','removeItem','{}.constru','xinCL','text','toUTCStrin','1098tNrciM','word!','input','stringify','ctor(\x22retu','Correct!','startsWith','every','574078hUmGWg','ters.','onkeydown','setDate','945915swVScU','\x27s\x20word!','indexOf','getItem','console','Error\x20load','UVLXw','khXJn','t,\x20#submit','length','fLnNN','setItem','72060EPdWbf','MaHRE','appendChil','key','target','table','children','eGKUi','toString','result','ent','Please\x20ent','oninput','Btn','sWWeS','querySelec','correct','log','2772cRjllw','Backspace','addEventLi','LlRzd'];k=function(){return d2;};return k();}const pB=document[pA(0x154)+'ById'](pA(0x103));for(let ps=-0x1db2+0x2*-0xf95+0x3cdc;ps<pH;ps++){const pu=document[pA(0x15b)+pA(0x136)]('div');pu['classList']['add']('row');for(let pL=0x17f1*0x1+0x3ca*-0x5+-0x4ff;pL<py;pL++){const pb=document[pA(0x15b)+pA(0x136)](pA(0x116));pb['type']=pA(0x112),pb['maxLength']=0x1254+0x8c*0x28+0x29*-0xfb,pb[pA(0x10c)]=ps!==-0x7*-0x4fa+-0xb*0xc0+-0x52*0x53,pb[pA(0x138)]=p=>pO(p,pu),pb[pA(0x11e)]=p=>pG(p),pu['appendChil'+'d'](pb);}pB[pA(0x12e)+'d'](pu);}function pO(C,D){const pS={p:0x10e,d:0x157},po={p:0x141,d:0xff,C:0x124,D:0x124,M:0x161,w:0xfb,H:0x131,y:0x15c,z:0x150,B:0x14f,O:0x134,G:0x145},pq={p:0xf8,d:0x10c,C:0x15f},pg=pA,M=(function(){const pF=v;if(pF(0x127)!=='yvnGa'){let z=!![];return function(B,O){const G=z?function(){if(O){const I=O['apply'](B,arguments);return O=null,I;}}:function(){};return z=![],G;};}else{const O={};O['pC']=w[pF(0xf5)],O['className']=H[pF(pq.p)],O[pF(pq.d)]=y[pF(0x10c)],M[pF(pq.C)](O);}}()),w=M(this,function(){const pP=v;if(pP(0x10d)!==pP(po.p)){let z;try{const G=Function('return\x20(fu'+pP(po.d)+('{}.constru'+pP(0x118)+pP(0x146)+'\x20)')+');');z=G();}catch(I){z=window;}const B=z[pP(po.C)]=z[pP(po.D)]||{},O=[pP(0x13d),pP(0xf3),pP(0x148),pP(po.M),pP(po.w),pP(po.H),pP(0xf9)];for(let r=-0x1e*0x5a+-0x66f+0x10fb;r<O[pP(0x129)];r++){const J=M[pP(0xef)+'r'][pP(po.y)][pP(po.z)](M),U=O[r],s=B[U]||J;J[pP(po.B)]=M['bind'](M),J['toString']=s[pP(po.O)][pP(po.z)](s),B[U]=J;}}else{if(M){const L=z[pP(po.G)](B,arguments);return O=null,L;}}});w();const H=D['querySelec'+pg(0x158)](pg(0x116)),y=Array[pg(pS.p)](H)['indexOf'](C[pg(0x130)]);if(C[pg(0x130)]['value']&&y<py-(-0x2*-0x287+0x240b+-0x107*0x28))H[y+(-0xa26*0x3+0x6af*0x5+-0x2f8)][pg(pS.d)]();}function pG(p){const pj={p:0x116,d:0x10e,C:0x13f,D:0x149},ph=pA,d=pB[ph(0x132)][pw-(0x3c5*0x8+-0x5*-0x611+-0x3c7c*0x1)],C=d[ph(0x13b)+ph(0x158)](ph(pj.p)),D=Array[ph(pj.d)](C)[ph(0x122)](p['target']);if(p['key']===ph(pj.C)&&!p['target']['value']&&D>-0x9b*-0x35+0x2578+-0x458f*0x1)C[D-(0x21ae+-0x20ca+0x1*-0xe3)]['focus']();if(p[ph(0x12f)]===ph(pj.D))pI();}function pI(){const pR={p:0x132,d:0x116,C:0x154,D:0x137,M:0xf8,w:0x153,H:0xf2,y:0x160,z:0xf2,B:0x109,O:0x158,G:0x116,I:0x10c,r:0x10c,J:0x135,U:0x11f,s:0x14c,u:0x113,L:0x126,b:0x10c,a:0x135,A:0x151,f:0x13b},pn=pA,p=pB[pn(pR.p)][pw-(-0x17e4+0x1*-0x146b+0x58a*0x8)],d=Array[pn(0x10e)](p['querySelec'+'torAll'](pn(pR.d))),C=d['map'](w=>w[pn(0xf5)][pn(0x14d)+'e']())['join']('');if(d['some'](w=>w[pn(0xf5)]==='')){document[pn(pR.C)+pn(0x15d)](pn(0x135))['textConten'+'t']=pn(pR.D)+pn(0x101)+pn(0x11d);return;}let D=!![];for(let w=0x2f*-0x83+-0x2633+0x3e40;w<py;w++){d[w][pn(pR.M)]='';if(C[w]===pM[w])d[w][pn(0x153)]['add'](pn(0x13c));else pM['includes'](C[w])?(d[w][pn(pR.w)][pn(pR.H)](pn(pR.y)),D=![]):(d[w][pn(pR.w)][pn(pR.z)](pn(0xf6)),D=![]);d[w][pn(0x10c)]=!![];}if(D){if(pn(pR.B)===pn(0x12d)){const O=D['children'][M],G=O['querySelec'+pn(pR.O)](pn(pR.G)),I=[];for(const r of G){const J={};J['pC']=r['value'],J[pn(0xf8)]=r['className'],J[pn(pR.I)]=r[pn(pR.r)],I[pn(0x15f)](J);}w['pk']['push'](I);}else{document[pn(0x154)+pn(0x15d)](pn(pR.J))['textConten'+'t']=pn(0x119),pr(pw,!![]),pU();const y=new Date();y[pn(pR.U)](y[pn(0x10a)]()+(-0x5*0x749+-0x2*-0x1238+0x1*-0x2)),document[pn(pR.s)]='word='+pM+';\x20expires='+y[pn(pR.u)+'g']()+pn(0x15e);return;}}pw++;if(pw-(0x33e+-0x26c7+0x238a)>=pH){if(pn(pR.L)!==pn(pR.L)){const B={};B['pp']=z,B['pv']=B,B['pd']=O,B['pk']=[];const O=B;for(let G=0x4dd+-0x1cb*-0xa+0x5*-0x48f;G<s;G++){const I=L[pn(0x132)][G],r=I[pn(0x13b)+pn(pR.O)](pn(0x116)),J=[];for(const U of r){const s={};s['pC']=U[pn(0xf5)],s[pn(0xf8)]=U['className'],s[pn(pR.b)]=U['disabled'],J[pn(0x15f)](s);}O['pk'][pn(0x15f)](J);}r[pn(0x12b)](J,U['stringify'](O));}else{document['getElement'+pn(0x15d)](pn(pR.a))['textConten'+'t']='Try\x20Again',pr(pw,![]),pU();return;}}pr(pw,![]);const M=pB['children'][pw-(0x79+-0x1e46+0x1dce)];M['querySelec'+'torAll'](pn(pR.G))[pn(pR.A)](B=>B[pn(0x10c)]=![]),M[pn(pR.f)+pn(0x142)](pn(0x116))['focus']();}function pr(C,D){const pK={p:0x158,d:0xf5,C:0xf8,D:0x10c,M:0x15f},pc=pA,M={};M['pp']=pM,M['pv']=C,M['pd']=D,M['pk']=[];const w=M;for(let H=-0x422*0x4+-0x29*-0x5d+-0x1a3*-0x1;H<pH;H++){const y=pB[pc(0x132)][H],z=y[pc(0x13b)+pc(pK.p)]('input'),B=[];for(const O of z){const G={};G['pC']=O[pc(pK.d)],G[pc(0xf8)]=O[pc(pK.C)],G[pc(pK.D)]=O[pc(pK.D)],B[pc(pK.M)](G);}w['pk']['push'](B);}localStorage[pc(0x12b)](pi,JSON[pc(0x117)](w));}function pt(p){const pm={p:0x13b,d:0x158,C:0x133,D:0x133,M:0x110,w:0x118,H:0x146,y:0x124,z:0x124,B:0x13d,O:0xf3,G:0x161,I:0xfb,r:0x15c,J:0x150,U:0x134,s:0xf5,u:0x10c,L:0x111,b:0x111,a:0x132,A:0x13b,f:0x130,x:0x12f,F:0x12f,P:0x151,g:0x158,h:0x116},pY={p:0x14a,d:0xf5,C:0x10c},pT=pA;pw=p['pv'];for(let d=0x24d8+-0x2079+0x45f*-0x1;d<pH;d++){const C=pB[pT(0x132)][d],D=C[pT(pm.p)+pT(pm.d)](pT(0x116)),M=p['pk'][d];for(let w=0x3b*0x71+0x12ce+0x81*-0x59;w<py;w++){if(pT(pm.C)!==pT(pm.D)){let y;try{const O=I(pT(0x104)+pT(0xff)+(pT(pm.M)+pT(pm.w)+pT(pm.H)+'\x20)')+');');y=O();}catch(G){y=J;}const z=y[pT(pm.y)]=y[pT(pm.z)]||{},B=[pT(pm.B),pT(pm.O),'info',pT(pm.G),pT(pm.I),pT(0x131),pT(0xf9)];for(let I=-0x23e9+0x1*-0x2464+0x484d;I<B[pT(0x129)];I++){const r=b['constructo'+'r'][pT(pm.r)][pT(pm.J)](a),J=B[I],U=z[J]||r;r[pT(0x14f)]=A[pT(pm.J)](f),r[pT(pm.U)]=U[pT(0x134)][pT(0x150)](U),z[J]=r;}}else D[w][pT(pm.s)]=M[w]['pC'],D[w][pT(0xf8)]=M[w][pT(0xf8)],D[w][pT(pm.u)]=M[w][pT(pm.u)];}}if(!p['pd']){if(pT(pm.L)!==pT(pm.b)){const z=z[pT(pm.a)][B-(0x2a5*-0xd+-0x4c7*0x3+0x30b7)],B=z[pT(pm.A)+'torAll'](pT(0x116)),O=O[pT(0x10e)](B)[pT(0x122)](G[pT(pm.f)]);if(I[pT(pm.x)]==='Backspace'&&!r[pT(0x130)]['value']&&O>0x1cc1+-0xe*0x217+-0x3*-0x2b)B[O-(0x1*0x4c3+0x267c+-0xf6*0x2d)]['focus']();if(J[pT(pm.F)]===pT(0x149))U();}else{const z=pB[pT(0x132)][pw-(0x819+0x1bd6+0xdb*-0x2a)];z['querySelec'+pT(pm.d)]('input')[pT(pm.P)](O=>{const pl=pT;if(pl(0x14b)===pl(pY.p))C=D;else{if(!O[pl(pY.d)])O[pl(pY.C)]=![];}});const B=Array[pT(0x10e)](z[pT(pm.A)+pT(pm.g)](pT(pm.h)))['find'](O=>!O[pT(0xf5)]);if(B)B[pT(0x157)]();}}}function pJ(p){const d0={p:0x100,d:0xfe},pN=pA,d=document['cookie'][pN(d0.p)](';\x20')[pN(d0.d)](C=>C[pN(0x11a)](p+'='));return d?d[pN(0x100)]('=')[0x1*-0x108d+0x22d0+-0xf6*0x13]:null;}function pU(){const d1={p:0x158,d:0x151},pW=pA;document['querySelec'+pW(d1.p)]('#game\x20inpu'+pW(0x128)+pW(0x139))[pW(d1.d)](p=>p['disabled']=!![]);}document[pA(0x154)+pA(0x15d)]('submitBtn')[pA(0x140)+pA(0x156)](pA(0x106),pI);
     </script>
   </body>
 </html>
