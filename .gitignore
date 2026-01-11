@@ -1,13 +1,8 @@
-# Files used for testing features before implementation.
-test.html
-test.mp4
-test.webm
-
 runSite.bat
 
 # Ignores the Python Compile stuff
-.dist/
-dist/
+.compiled/
+compiled/
 
 ### VS Code
 .vscode/*

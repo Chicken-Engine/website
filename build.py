@@ -4,9 +4,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 POSTS = ROOT / "posts"
 TEMPLATES = ROOT / "templates"
-DIST = ROOT / "dist"
+DIST = ROOT / "compiled"
 
-EXCLUDE_COPY = {".git", ".github", "dist", "posts", "templates", "build.py"}
+EXCLUDE_COPY = {".git", ".github", "compiled", "posts", "templates", "build.py", ".gitignore", "LICENSE", "runSite.bat"}
+EXCLUDE_BLOGS = {"template"}
 
 def slugify(s):
     s = s.strip().lower()
@@ -54,12 +55,9 @@ CUSTOM_TAGS = {
 def md_to_html(md):
     lines = md.replace("\r\n", "\n").split("\n")
     html_lines, in_code, code_buf = [], False, []
-
     html_block = False
-
     for line in lines:
         stripped = line.strip()
-
         if stripped.startswith("```"):
             if not in_code:
                 in_code, code_buf = True, []
@@ -67,20 +65,16 @@ def md_to_html(md):
                 html_lines.append("<pre><code>" + html.escape("\n".join(code_buf)) + "</code></pre>")
                 in_code = False
             continue
-
         if in_code:
             code_buf.append(line)
             continue
-
         if stripped.startswith("<") and stripped.endswith(">") and not stripped.startswith("</"):
             html_block = True
         elif stripped.startswith("</"):
             html_block = False
-
         if html_block or stripped.startswith("<"):
             html_lines.append(line)
             continue
-
         matched_custom = False
         for tag, (open_html, close_html) in CUSTOM_TAGS.items():
             if stripped.startswith(tag):
@@ -90,14 +84,12 @@ def md_to_html(md):
                 break
         if matched_custom:
             continue
-
         m = re.match(r"^\s*(#{1,6})\s+(.+)$", line)
         if m:
             level = len(m.group(1))
             html_lines.append(f"<h{level}>" + html.escape(m.group(2)) + f"</h{level}>")
         elif stripped:
             html_lines.append("<p>" + html.escape(line) + "</p>")
-
     return "\n".join(html_lines)
 
 def render_template(name, **ctx):
@@ -122,39 +114,32 @@ def copy_site_root():
 def load_posts():
     posts = []
     seen_slugs = set()
-
     for mdfile in sorted(POSTS.glob("*.md")):
         raw = read_file(mdfile)
         meta, body = parse_front_matter(raw)
-        title = meta.get("title") or mdfile.stem
+        stem = mdfile.stem
+        title = meta.get("title") or stem
         date_str = meta.get("date", "")
         writer = meta.get("writer", "").strip()
-
+        if stem in EXCLUDE_BLOGS:
+            continue
         date = None
         if date_str:
             try:
                 date = datetime.date.fromisoformat(date_str)
             except ValueError:
                 date = None
-
         if not date:
-            mtime = mdfile.stat().st_mtime
-            date = datetime.date.fromtimestamp(mtime)
-
+            date = datetime.date.fromtimestamp(mdfile.stat().st_mtime)
         display_date = date.strftime("%B %d, %Y")
-
         description = meta.get("description", "").strip()
         if not description:
             plain = strip_md(body)
             description = plain[:106] + " ..." if len(plain) > 140 else plain
-
         slug = meta.get("slug") or slugify(title)
-
         if slug in seen_slugs:
-            print(f"Skipping duplicate post with slug: {slug}")
             continue
         seen_slugs.add(slug)
-
         html_body = md_to_html(body)
         posts.append({
             "title": title,
@@ -165,7 +150,6 @@ def load_posts():
             "slug": slug,
             "html": html_body
         })
-
     posts.sort(key=lambda p: p["date"], reverse=True)
     return posts
 
@@ -181,9 +165,8 @@ def build():
 
     items = []
     for p in posts:
-        
         items.append(
-            '<div class="blog-post">'
+            f'<div class="blog-post" data-writer="{html.escape(p["writer"])}">'
             f'<h2>{html.escape(p["title"])}</h2>'
             f'<p>{html.escape(p["date_str"])}</p>'
             f'<p>{html.escape(p["description"])}</p>'
@@ -191,8 +174,27 @@ def build():
             f'<div class="blog-buttons"><a href="../blogs/{p["slug"]}/index.html">Read more</a></div>'
             '</div>'
         )
-    blogs_index = render_template("blogs_index.html", posts="".join(items))
+
+    writers = sorted({p["writer"] for p in posts if p["writer"]})
+    writer_buttons = ['<button class="writer-btn" data-writer="all">All</button>']
+    for w in writers:
+        safe = html.escape(w)
+        writer_buttons.append(f'<button class="writer-btn" data-writer="{safe}">{safe}</button>')
+
+    blogs_index = render_template("blogs_index.html", posts="".join(items), writers="".join(writer_buttons))
     write_file(DIST / "blogs" / "index.html", blogs_index)
+
+    latest_link = ""
+    if posts:
+        latest = posts[0]
+        latest_link = f'<a href="./blogs/{latest["slug"]}/index.html">{html.escape(latest["title"])}</a>'
+
+    homepage = DIST / "index.html"
+    if homepage.exists():
+        content = homepage.read_text(encoding="utf-8")
+        content = re.sub(r"\{\{\s*latest\s*\}\}", latest_link, content)
+        homepage.write_text(content, encoding="utf-8")
+
     print(f"Built {len(posts)} posts")
 
 def main():

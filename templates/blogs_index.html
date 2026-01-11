@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="initial-scale=1, minimum-scale=1, width=device-width">
@@ -9,20 +10,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
 
   <style>
-    body
-    {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        font-family: "Bitcount Single", system-ui;
-        background: linear-gradient(135deg, #E5E7FF, #d4d8ff);
-        color: white;
-        text-shadow: 1px 1px 2px black;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Bitcount Single", system-ui;
+      background: linear-gradient(135deg, #E5E7FF, #d4d8ff);
+      color: white;
+      text-shadow: 1px 1px 2px black;
     }
 
-    header
-    {
+    header {
       background: #9ab1f0;
       padding: 20px;
       display: flex;
@@ -31,27 +30,44 @@
       border-bottom: 4px solid #AEC1F6;
     }
 
-    .blog-container
-    {
+    .blog-container {
       max-width: 900px;
       margin: 40px auto;
       padding: 20px;
       flex: 1;
     }
 
-    .blog-post
-    {
+    .writer-filters {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .writer-btn {
+      background: #95acec;
+      border: 2px solid #beccf5;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: "Bitcount Single", system-ui;
+    }
+
+    .writer-btn:hover {
+      background: #a2bafc;
+    }
+
+    .blog-post {
       background: #95acec;
       border: 3px solid #beccf5;
       border-radius: 16px;
       margin-bottom: 20px;
       padding: 30px;
       transition: background 0.3s;
-      flex: 1;
     }
 
-    .blog-buttons a
-    {
+    .blog-buttons a {
       background: #95acec;
       padding: 10px 20px;
       border-radius: 999px;
@@ -62,64 +78,47 @@
       transition: background 0.3s;
     }
 
-    .blog-buttons a:hover
-    {
+    .blog-buttons a:hover {
       background: #a2bafc;
     }
 
-    .blog-post h2
-    {
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 22px;
-    }
-
-    .blog-post p
-    {
-      margin-bottom: 10px;
-    }
-
-    .blog-post a
-    {
-      color: #fff;
-      text-decoration: underline;
-    }
-
-    footer
-    {
+    footer {
       background: #9ab1f0;
       padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       border-top: 4px solid #AEC1F6;
-    }
-
-    .footer-socials img
-    {
-      height: 30px;
-      filter: brightness(1000%);
-    }
-
-    footer a:hover
-    {
-      filter: brightness(85%);
     }
   </style>
 </head>
+
 <body>
 
   <headerr></headerr>
   <script class="headerr" src="../scripts/header.js"></script>
 
-
   <section class="blog-container">
     <h1>The Chicken Engine Blogs</h1>
 
-    {{ posts }}</div>
+    <div class="writer-filters">
+      {{ writers }}
+    </div>
+
+    {{ posts }}
   </section>
 
   <footerr></footerr>
   <script src="../scripts/footer.js"></script>
+
+  <script>
+    document.addEventListener("click", function (e) {
+      const btn = e.target.closest(".writer-btn");
+      if (!btn) return;
+      const pick = btn.dataset.writer;
+      document.querySelectorAll(".blog-post").forEach(post => {
+        post.style.display = (pick === "all" || post.dataset.writer === pick) ? "" : "none";
+      });
+    });
+  </script>
+
 </body>
-</html>
+
+</html
