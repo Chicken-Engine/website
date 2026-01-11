@@ -1,5 +1,5 @@
 ---
-title: Big Chances
+title: Big Changes
 date: 2026-01-11
 slug: changes
 writer: Sofy
