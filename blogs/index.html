@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="initial-scale=1, minimum-scale=1, width=device-width">
+  <meta property="og:image" content="https://raw.githubusercontent.com/Chicken-Engine/website/refs/heads/main/logo.png">
+  <title>Chicken Engine - Blogs</title>
+  <link rel="icon" type="image/x-icon" href="../icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Bitcount Single", system-ui;
+      background: linear-gradient(135deg, #E5E7FF, #d4d8ff);
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    header {
+      background: #9ab1f0;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 4px solid #AEC1F6;
+    }
+
+    .blog-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      flex: 1;
+    }
+
+    .writer-filters {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .writer-btn {
+      background: #95acec;
+      border: 2px solid #beccf5;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: "Bitcount Single", system-ui;
+    }
+
+    .writer-btn:hover {
+      background: #a2bafc;
+    }
+
+    .blog-post {
+      background: #95acec;
+      border: 3px solid #beccf5;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      padding: 30px;
+      transition: background 0.3s;
+    }
+
+    .blog-buttons a {
+      background: #95acec;
+      padding: 10px 20px;
+      border-radius: 999px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      border: 2px solid #beccf5;
+      transition: background 0.3s;
+    }
+
+    .blog-buttons a:hover {
+      background: #a2bafc;
+    }
+
+    footer {
+      background: #9ab1f0;
+      padding: 20px;
+      border-top: 4px solid #AEC1F6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <headerr></headerr>
+  <script class="headerr" src="../scripts/header.js"></script>
+
+  <section class="blog-container">
+    <h1>The Chicken Engine Blogs</h1>
+
+    <div class="writer-filters">
+      <button class="writer-btn" data-writer="all">All</button><button class="writer-btn" data-writer="Sofy">Sofy</button>
+    </div>
+
+    <div class="blog-post" data-writer="Sofy"><h2>Big Chances</h2><p>January 11, 2026</p><p>Hello everyone, happy new year! Recently I&#x27;ve made some rather important changes I think that need to be a ...</p><br><div class="blog-buttons"><a href="../blogs/changes/index.html">Read more</a></div></div><div class="blog-post" data-writer="Sofy"><h2>First Engine Blog!</h2><p>August 10, 2025</p><p>Hello Everyone! in this blog I&#x27;ll be sharing some information on the current progress on the engine itself ...</p><br><div class="blog-buttons"><a href="../blogs/firstblog/index.html">Read more</a></div></div><div class="blog-post" data-writer="Sofy"><h2>erereerererereerererereererer</h2><p>August 07, 2025</p><p>sans undertale bottom text</p><br><div class="blog-buttons"><a href="../blogs/test/index.html">Read more</a></div></div>
+  </section>
+
+  <footerr></footerr>
+  <script src="../scripts/footer.js"></script>
+
+  <script>
+    document.addEventListener("click", function (e) {
+      const btn = e.target.closest(".writer-btn");
+      if (!btn) return;
+      const pick = btn.dataset.writer;
+      document.querySelectorAll(".blog-post").forEach(post => {
+        post.style.display = (pick === "all" || post.dataset.writer === pick) ? "" : "none";
+      });
+    });
+  </script>
+
+</body>
+
+</html
